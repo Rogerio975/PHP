@@ -1,4 +1,18 @@
 <?php
+// Configurações do banco de dados
+$servername = "localhost";
+$username = "seu_usuario";
+$password = "sua_senha";
+$dbname = "nome_do_banco_de_dados";
+
+// Conexão com o banco de dados
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+// Verifica a conexão
+if ($conn->connect_error) {
+    die("Falha na conexão com o banco de dados: " . $conn->connect_error);
+}
+
 // Verifica se o formulário foi enviado
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Verifica se todos os campos estão preenchidos
@@ -9,50 +23,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         // Validar o email
         if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            // Se todos os campos estão preenchidos e o email é válido, podemos processar os dados
+            // Preparar e executar a query SQL para inserir os dados no banco de dados
+            $stmt = $conn->prepare("INSERT INTO mensagens (nome, email, mensagem) VALUES (?, ?, ?)");
+            $stmt->bind_param("sss", $nome, $email, $mensagem);
 
-            // Adicionar código para enviar o email
-            $para = "seuemail@example.com"; // Substitua pelo seu endereço de email
-            $assunto = "Nova mensagem do formulário de contato";
-            $corpo = "Nome: $nome\n";
-            $corpo .= "Email: $email\n";
-            $corpo .= "Mensagem:\n$mensagem";
-            $headers = "From: $email" . "\r\n" .
-                       "Reply-To: $email" . "\r\n" .
-                       "X-Mailer: PHP/" . phpversion();
+            if ($stmt->execute()) {
+                // Se os dados forem inseridos com sucesso, envie o e-mail
+                $para = "seu_email@exemplo.com";
+                $assunto = "Nova mensagem do formulário de contato";
+                $corpo = "Você recebeu uma nova mensagem do formulário de contato:\n\n";
+                $corpo .= "Nome: $nome\n";
+                $corpo .= "Email: $email\n";
+                $corpo .= "Mensagem: $mensagem\n";
 
-            // Envie o email
-            if (mail($para, $assunto, $corpo, $headers)) {
-                // Email enviado com sucesso
+                // Envio de e-mail
+                mail($para, $assunto, $corpo);
 
-                // Adicionar código para salvar no banco de dados
-                // Conectar ao banco de dados (substitua pelos seus próprios detalhes de conexão)
-                $servername = "localhost";
-                $username = "usuario";
-                $password = "senha";
-                $dbname = "nomedobanco";
-
-                // Cria conexão
-                $conn = new mysqli($servername, $username, $password, $dbname);
-
-                // Verifica a conexão
-                if ($conn->connect_error) {
-                    die("Falha na conexão: " . $conn->connect_error);
-                }
-
-                // Insere os dados no banco de dados
-                $sql = "INSERT INTO mensagens (nome, email, mensagem) VALUES ('$nome', '$email', '$mensagem')";
-                if ($conn->query($sql) === TRUE) {
-                    echo "Obrigado por entrar em contato, $nome! Sua mensagem foi enviada com sucesso.";
-                } else {
-                    echo "Erro ao enviar a mensagem: " . $conn->error;
-                }
-
-                // Fecha a conexão
-                $conn->close();
+                // Exemplo simples de saída
+                echo "Obrigado por entrar em contato, $nome! Sua mensagem foi enviada com sucesso.";
             } else {
-                // Erro ao enviar o email
-                echo "Erro ao enviar a mensagem.";
+                echo "Erro ao enviar a mensagem. Por favor, tente novamente mais tarde.";
             }
         } else {
             // Se o email não for válido, exiba uma mensagem de erro
@@ -67,4 +57,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     header("Location: form_contato.html");
     exit;
 }
+
+// Fechar a conexão com o banco de dados
+$conn->close();
 ?>
