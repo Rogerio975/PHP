@@ -1,21 +1,16 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CRUD - Cadastrar</title>
+    <title>Minha Página PHP</title>
 </head>
 <body>
-    <h1>Cadastrar Usuário</h1>
-    <form method="POST" action="processa.php">
-        <label for="nome">Nome: </label>
-        <input type="text" name="nome" placeholder="Digite o nome completo."><br><br>
 
-        <label for="email">E-mail: </label>
-        <input type="text" name="email" placeholder="Digite o nome seu e-mail."><br><br>
-        
-        <input type="submit" value="Cadastrar">
-    </form>
-    
+<?php
+// Código PHP, como conexão com banco de dados ou lógica
+echo "<p>Bem-vindo ao meu site!</p>";
+?>
+
+<h1>Meu Título Principal</h1> 
+
 </body>
 </html>
